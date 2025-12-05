@@ -1,0 +1,1158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PM Poshan — Monthly Report</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { light: '#5fa8f5', DEFAULT: '#1d75e5', dark: '#0d47a1' }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    @media print { .no-print { display: none !important; } }
+
+    /* shake animation for failed login */
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-4px); }
+      100% { transform: translateX(0); }
+    }
+    .animate-shake { animation: shake 0.35s ease-in-out; }
+
+    /* simple modal overlay */
+    .modal-backdrop { background: rgba(2,6,23,0.5); }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen text-slate-800">
+
+<!-- ========== LOGIN PAGE ========== -->
+<div id="loginPage" class="flex items-center justify-center min-h-screen p-5">
+  <div id="loginBox" class="bg-white shadow-xl rounded-2xl p-8 max-w-sm w-full border border-blue-200">
+    <h1 class="text-2xl font-bold text-center text-primary mb-1">PM POSHAN LOGIN</h1>
+    <p class="text-center text-sm text-gray-600 mb-6">Enter User ID & Password</p>
+
+    <input id="loginUser" placeholder="User ID" class="w-full p-3 mb-3 border rounded-lg focus:ring-2 focus:ring-primary" />
+    <input id="loginPass" placeholder="Password" type="password" class="w-full p-3 mb-3 border rounded-lg focus:ring-2 focus:ring-primary" />
+
+    <button id="loginBtn" class="w-full bg-primary text-white p-3 rounded-lg font-semibold hover:bg-primary-light transition">Login</button>
+    <p id="loginError" class="text-center text-red-600 text-sm mt-3 hidden">Invalid User ID or Password</p>
+  </div>
+</div>
+
+<!-- ========== MAIN PAGE ========== -->
+<div id="mainPage" class="hidden">
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-r from-primary to-blue-600 text-white shadow-lg p-5">
+    <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-2 text-center">
+      <h2 class="text-lg font-semibold uppercase text-blue-100 drop-shadow">Pradhan Mantri Poshan Shakti Nirman (PM POSHAN)</h2>
+      <h1 class="text-3xl font-extrabold drop-shadow">PM Poshan Monthly Report</h1>
+      <button id="logoutBtn" class="no-print px-4 py-2 bg-white text-primary rounded-lg shadow hover:bg-blue-50">Logout</button>
+    </div>
+  </header>
+
+  <main class="container mx-auto p-4">
+
+    <div class="grid md:grid-cols-4 gap-6">
+
+      <!-- Left: Form (col-span 3) -->
+      <div class="md:col-span-3 space-y-6">
+
+        <!-- 1. School Details (existing) -->
+        <section class="bg-white/90 shadow-xl rounded-2xl p-6 border border-blue-100 no-print">
+          <h2 class="text-xl font-bold text-primary mb-3">1. School Details</h2>
+
+          <form id="entryForm" class="space-y-4">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="text-sm font-medium">Month - Year *</label>
+                <input id="month" type="month" required class="w-full p-2 border rounded" />
+              </div>
+
+              <div>
+                <label class="text-sm font-medium">UDISE Code</label>
+                <input id="udise" type="text" class="w-full p-2 border rounded" />
+              </div>
+
+              <div>
+                <label class="text-sm font-medium">School Name *</label>
+                <select id="schoolName" required class="w-full p-2 border rounded">
+                  <option value="">Select School</option>
+                  <option>Government Primary School A</option>
+                  <option>Government Primary School B</option>
+                  <option>Government Primary School C</option>
+                  <option>Government Upper Primary School</option>
+                  <option>Model School</option>
+                  <option>Municipal School</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="text-sm font-medium">Type</label>
+                <select id="schoolType" class="w-full p-2 border rounded">
+                  <option value="">-- Select Type --</option>
+                  <option>Government</option>
+                  <option>Local Body</option>
+                  <option>EGS/AIE Centers</option>
+                  <option>NCLP</option>
+                  <option>Madras / Maqtab</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="text-sm font-medium">Category</label>
+                <select id="schoolCategory" class="w-full p-2 border rounded">
+                  <option value="">-- Select Category --</option>
+                  <option>Primary</option>
+                  <option>Upper Primary</option>
+                  <option>Primary with Upper Primary</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="text-sm font-medium">Kitchen Type</label>
+                <select id="kitchenType" class="w-full p-2 border rounded">
+                  <option value="">-- Select --</option>
+                  <option>NGO</option>
+                  <option>SHG</option>
+                  <option>School Managed</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label class="text-sm font-medium">State / UT - District - Block/NP - Village/Ward</label>
+                <input id="locationFull" type="text" placeholder="State - District - Block - Village" class="w-full p-2 border rounded" />
+              </div>
+              <div>
+                <label class="text-sm font-medium">Enrolment</label>
+                <input id="enrolment" type="number" min="0" class="w-full p-2 border rounded" />
+              </div>
+            </div>
+
+          </form>
+        </section>
+
+        <!-- 2. Meals Availed Status -->
+        <section class="bg-white shadow-xl rounded-2xl p-6 border border-blue-100 no-print">
+          <h2 class="text-xl font-bold text-primary mb-3">2. Meals Availed Status</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label class="text-sm font-medium">Meals Availed</label>
+              <div class="flex gap-2 mt-1">
+                <label class="inline-flex items-center"><input id="availed_bal" type="checkbox" class="mr-2" /> Bal Vatika</label>
+                <label class="inline-flex items-center"><input id="availed_primary" type="checkbox" class="mr-2" /> Primary</label>
+                <label class="inline-flex items-center"><input id="availed_upper" type="checkbox" class="mr-2" /> Upper Primary</label>
+              </div>
+            </div>
+
+            <div>
+              <label class="text-sm font-medium">Number of School days during month</label>
+              <input id="schoolDays" type="number" min="0" class="w-full p-2 border rounded" />
+            </div>
+
+            <div>
+              <label class="text-sm font-medium">Actual number of days Mid Day Meal served</label>
+              <input id="daysMdmServed" type="number" min="0" class="w-full p-2 border rounded" />
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <label class="text-sm font-medium">Total Meals served during the month</label>
+            <input id="totalMealsServed" type="number" min="0" class="w-full p-2 border rounded" />
+          </div>
+        </section>
+
+        <!-- 3. Fund Details -->
+        <section class="bg-white shadow-xl rounded-2xl p-6 border border-blue-100 no-print">
+          <h2 class="text-xl font-bold text-primary mb-3">3. Fund Details (in Rs.)</h2>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm table-auto border-collapse">
+              <thead>
+                <tr class="bg-blue-100 text-blue-900">
+                  <th class="p-2 text-left">Component</th>
+                  <th class="p-2 text-right">Opening Balance</th>
+                  <th class="p-2 text-right">Received during the Month</th>
+                  <th class="p-2 text-right">Expenditure during the Month</th>
+                  <th class="p-2 text-right">Closing Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="p-2">Cooking Cost - Bal Vatika</td>
+                  <td class="p-2"><input id="fund_open_balvatika" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fund_recv_balvatika" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fund_exp_balvatika" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fund_close_balvatika" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                </tr>
+                <tr>
+                  <td class="p-2">Cooking Cost - Primary</td>
+                  <td class="p-2"><input id="fund_open_primary" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fund_recv_primary" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fund_exp_primary" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fund_close_primary" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                </tr>
+                <tr>
+                  <td class="p-2">Cooking Cost - Upper Primary</td>
+                  <td class="p-2"><input id="fund_open_upper" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fund_recv_upper" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fund_exp_upper" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fund_close_upper" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                </tr>
+                <tr>
+                  <td class="p-2">Cook Cum Helper</td>
+                  <td class="p-2"><input id="fund_open_cch" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fund_recv_cch" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fund_exp_cch" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fund_close_cch" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                </tr>
+                <tr>
+                  <td class="p-2">School Expenses : MME Expenses</td>
+                  <td class="p-2"><input id="fund_open_mme" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fund_recv_mme" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fund_exp_mme" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fund_close_mme" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-3 flex items-center gap-4">
+            <label class="font-medium">Does closing balance match bank account closing balance?</label>
+            <label class="inline-flex items-center"><input type="radio" name="bankmatch" id="bankmatch_yes" class="mr-2" /> Yes</label>
+            <label class="inline-flex items-center"><input type="radio" name="bankmatch" id="bankmatch_no" class="mr-2" /> No</label>
+          </div>
+        </section>
+
+        <!-- 4. Cook Cum Helper Payment Details -->
+        <section class="bg-white shadow-xl rounded-2xl p-6 border border-blue-100 no-print">
+          <div class="flex justify-between items-center">
+            <h2 class="text-xl font-bold text-primary">4. Cook Cum Helper Payment Details</h2>
+            <div class="flex gap-2">
+              <button id="addCookRow" type="button" class="px-3 py-2 bg-primary text-white rounded">Add Cook</button>
+              <button id="clearCookRows" type="button" class="px-3 py-2 bg-gray-100 rounded">Clear</button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto mt-3">
+            <table id="cooksTable" class="w-full text-sm table-auto">
+              <thead class="bg-blue-100 text-blue-900">
+                <tr>
+                  <th class="p-2">S.No.</th>
+                  <th class="p-2">Cook Name</th>
+                  <th class="p-2">Gender (M/F)</th>
+                  <th class="p-2">Category (SC/ST/OBC/GEN)</th>
+                  <th class="p-2">Payment Mode (Cash/Bank)</th>
+                  <th class="p-2 text-right">Amount (Rs.)</th>
+                  <th class="p-2">Action</th>
+                </tr>
+              </thead>
+              <tbody id="cooksTbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 5. Food Grains Details (in KG) -->
+        <section class="bg-white shadow-xl rounded-2xl p-6 border border-blue-100 no-print">
+          <h2 class="text-xl font-bold text-primary mb-3">5. Food Grains Details (in KG)</h2>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm table-auto">
+              <thead class="bg-blue-100 text-blue-900">
+                <tr>
+                  <th class="p-2">Category</th>
+                  <th class="p-2">Food Item</th>
+                  <th class="p-2 text-right">Opening Balance (Kg)</th>
+                  <th class="p-2 text-right">Received during Month (Kg)</th>
+                  <th class="p-2 text-right">Consumption during Month (Kg)</th>
+                  <th class="p-2 text-right">Closing Balance (Kg)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="p-2">Bal Vatika</td>
+                  <td class="p-2">Wheat</td>
+                  <td class="p-2"><input id="fg_bal_wheat_open" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_bal_wheat_recv" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_bal_wheat_cons" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_bal_wheat_close" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                </tr>
+                <tr>
+                  <td class="p-2">Bal Vatika</td>
+                  <td class="p-2">Rice</td>
+                  <td class="p-2"><input id="fg_bal_rice_open" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_bal_rice_recv" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_bal_rice_cons" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_bal_rice_close" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                </tr>
+                <tr>
+                  <td class="p-2">Primary</td>
+                  <td class="p-2">Wheat</td>
+                  <td class="p-2"><input id="fg_pri_wheat_open" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_pri_wheat_recv" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_pri_wheat_cons" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_pri_wheat_close" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                </tr>
+                <tr>
+                  <td class="p-2">Primary</td>
+                  <td class="p-2">Rice</td>
+                  <td class="p-2"><input id="fg_pri_rice_open" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_pri_rice_recv" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_pri_rice_cons" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_pri_rice_close" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                </tr>
+                <tr>
+                  <td class="p-2">Upper Primary</td>
+                  <td class="p-2">Wheat</td>
+                  <td class="p-2"><input id="fg_up_wheat_open" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_up_wheat_recv" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_up_wheat_cons" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_up_wheat_close" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                </tr>
+                <tr>
+                  <td class="p-2">Upper Primary</td>
+                  <td class="p-2">Rice</td>
+                  <td class="p-2"><input id="fg_up_rice_open" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_up_rice_recv" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_up_rice_cons" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                  <td class="p-2"><input id="fg_up_rice_close" type="number" min="0" class="w-full p-1 border rounded text-right" /></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 6. Children Health Status -->
+        <section class="bg-white shadow-xl rounded-2xl p-6 border border-blue-100 no-print">
+          <h2 class="text-xl font-bold text-primary mb-3">6. Children Health Status</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="text-sm font-medium">No. of children (Classes 1–8) who received 4 IFA tablets (Boys)</label>
+              <input id="ifa_boys" type="number" min="0" class="w-full p-2 border rounded" />
+            </div>
+            <div>
+              <label class="text-sm font-medium">No. of children (Classes 1–8) who received 4 IFA tablets (Girls)</label>
+              <input id="ifa_girls" type="number" min="0" class="w-full p-2 border rounded" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+            <div>
+              <label class="text-sm font-medium">No. of children screened by mobile health (RBSK) team</label>
+              <input id="rbsk_screened" type="number" min="0" class="w-full p-2 border rounded" />
+            </div>
+            <div>
+              <label class="text-sm font-medium">No. of children referred by mobile health (RBSK) team</label>
+              <input id="rbsk_referred" type="number" min="0" class="w-full p-2 border rounded" />
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. School Inspection -->
+        <section class="bg-white shadow-xl rounded-2xl p-6 border border-blue-100 no-print">
+          <h2 class="text-xl font-bold text-primary mb-3">7. School Inspection</h2>
+
+          <div class="flex items-center gap-4">
+            <label class="font-medium">School Inspection done during the month?</label>
+            <label class="inline-flex items-center"><input id="insp_yes" type="radio" name="insp_done" class="mr-2" /> Yes</label>
+            <label class="inline-flex items-center"><input id="insp_no" type="radio" name="insp_done" class="mr-2" /> No</label>
+          </div>
+
+          <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="font-medium">By (check all that apply)</label>
+              <div class="mt-1 space-y-1">
+                <label class="inline-flex items-center"><input id="insp_taskforce" type="checkbox" class="mr-2" /> Members of Task Force</label><br/>
+                <label class="inline-flex items-center"><input id="insp_district" type="checkbox" class="mr-2" /> District Officials</label><br/>
+                <label class="inline-flex items-center"><input id="insp_block" type="checkbox" class="mr-2" /> Block/Taluka Level Officials</label><br/>
+                <label class="inline-flex items-center"><input id="insp_smc" type="checkbox" class="mr-2" /> SMC Members</label>
+              </div>
+            </div>
+
+            <div>
+              <label class="font-medium">Number of Untoward Incidents Occurred</label>
+              <input id="untoward_incidents" type="number" min="0" class="w-full p-2 border rounded" />
+            </div>
+          </div>
+
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="text-sm font-medium">Signature of the SMC Chairperson / Gram Pradhan</label>
+              <input id="sig_smc" type="text" placeholder="Name / Signature" class="w-full p-2 border rounded" />
+            </div>
+            <div>
+              <label class="text-sm font-medium">Signature of Head Teacher</label>
+              <input id="sig_head" type="text" placeholder="Name / Signature" class="w-full p-2 border rounded" />
+            </div>
+          </div>
+        </section>
+
+        <!-- Submit buttons -->
+        <div class="flex gap-3">
+          <button id="saveEntryBtn" class="px-6 py-3 bg-primary text-white rounded-lg shadow">Save Entry</button>
+          <button id="resetFormBtn" class="px-6 py-3 bg-gray-200 rounded-lg">Reset Form</button>
+        </div>
+      </div>
+
+      <!-- Right: School Details Card (auto-fill) -->
+      <aside class="space-y-6">
+
+        <section id="schoolDetailsCard" class="bg-white shadow-xl rounded-2xl p-6 border border-blue-100">
+          <h3 class="text-lg font-semibold text-primary mb-2">🏫 School Details</h3>
+
+          <div class="text-sm text-slate-700 space-y-2">
+            <div class="flex justify-between"><span class="font-medium">Name</span><span id="sd_name">—</span></div>
+            <div class="flex justify-between"><span class="font-medium">UDISE</span><span id="sd_udise">—</span></div>
+            <div class="flex justify-between"><span class="font-medium">Type</span><span id="sd_type">—</span></div>
+            <div class="flex justify-between"><span class="font-medium">Category</span><span id="sd_cat">—</span></div>
+            <div class="flex justify-between"><span class="font-medium">District</span><span id="sd_dist">—</span></div>
+            <div class="flex justify-between"><span class="font-medium">Kitchen</span><span id="sd_kitchen">—</span></div>
+            <div class="flex justify-between"><span class="font-medium">Enrolment</span><span id="sd_enroll">—</span></div>
+          </div>
+
+          <p class="mt-3 text-xs text-slate-500">Auto-updates when selecting a school or editing an entry.</p>
+        </section>
+
+        <!-- Quick actions -->
+        <section class="bg-white shadow rounded-lg p-4 border border-blue-50 no-print">
+          <h4 class="font-medium text-blue-700 mb-2">Quick Actions</h4>
+          <div class="flex flex-col gap-2">
+            <button id="viewSchoolBtn" class="px-3 py-2 bg-blue-100 rounded hover:bg-blue-200">View Selected School</button>
+            <button id="clearDetailsBtn" class="px-3 py-2 bg-gray-100 rounded hover:bg-gray-200">Clear Details</button>
+          </div>
+        </section>
+
+      </aside>
+
+    </div> <!-- grid end -->
+
+    <!-- Data Table -->
+    <section class="bg-white shadow-xl rounded-2xl p-6 border border-blue-100 mt-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-primary">📋 Data Table</h2>
+        <div class="flex gap-3 no-print">
+          <input id="filterMonth" type="month" class="p-2 rounded border border-blue-200" />
+          <button id="filterBtn" class="px-3 py-1 bg-blue-100 rounded hover:bg-blue-200">Filter</button>
+          <button id="clearFilter" class="px-3 py-1 bg-gray-100 rounded">Clear</button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto rounded-lg border border-blue-100">
+        <table class="w-full text-sm">
+          <thead class="bg-blue-100 text-blue-900">
+            <tr>
+              <th class="px-4 py-2 text-left">#</th>
+              <th class="px-4 py-2 text-left">Month</th>
+              <th class="px-4 py-2 text-left">School</th>
+              <th class="px-4 py-2 text-right">Enrolment</th>
+              <th class="px-4 py-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="divide-y divide-blue-50"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- DETAILS MODAL -->
+  <div id="detailsModal" class="hidden fixed inset-0 flex items-center justify-center z-50">
+    <div class="modal-backdrop absolute inset-0"></div>
+    <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full p-6 relative z-10">
+      <button id="closeModal" class="absolute top-3 right-3 text-slate-600">✕</button>
+      <h3 class="text-lg font-bold mb-3">Entry Details</h3>
+      <div id="detailsContent" class="text-sm space-y-2 overflow-auto max-h-[60vh]"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="mt-10">
+    <div class="bg-gradient-to-r from-blue-600 to-primary text-white py-8 shadow-inner">
+      <div class="container mx-auto text-center space-y-3">
+        <div class="flex justify-center mb-2">
+          <svg width="60" height="60" viewBox="0 0 64 64" fill="none"><g fill="white"><path d="M32 6c-4 0-7 3-7 7s3 7 7 7 7-3 7-7-3-7-7-7zm-3 16c-5 2-9 7-9 13v8h24v-8c0-6-4-11-9-13l-3 3-3-3z"/><path d="M14 14c-3 0-6 2-6 5s3 5 6 5 6-2 6-5-3-5-6-5zm-2 12c-4 2-7 6-7 11v7h16v-7c0-5-3-9-7-11l-2 2-2-2z"/><path d="M50 14c-3 0-6 2-6 5s3 5 6 5 6-2 6-5-3-5-6-5zm-2 12c-4 2-7 6-7 11v7h16v-7c0-5-3-9-7-11l-2 2-2-2z"/></g></svg>
+        </div>
+        <h3 class="text-xl font-bold drop-shadow">PM POSHAN REPORT SYSTEM</h3>
+        <div class="border-t border-white/20 pt-4"></div>
+        <p class="text-blue-100 text-xs">© 2025 PM Poshan Report • All Rights Reserved</p>
+      </div>
+    </div>
+  </footer>
+
+</div> <!-- MAIN PAGE END -->
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+/* ================= LOGIN SYSTEM ================= */
+const loginPage = document.getElementById("loginPage");
+const loginBox = document.getElementById("loginBox");
+const mainPage = document.getElementById("mainPage");
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const loginError = document.getElementById("loginError");
+const loginUserInput = document.getElementById("loginUser");
+const loginPassInput = document.getElementById("loginPass");
+
+// credentials (change as needed)
+const VALID_USER = "admin";
+const VALID_PASS = "12345";
+
+// show dashboard if already logged in
+if (localStorage.getItem("pmposhan_loggedin") === "yes") {
+  loginPage.classList.add("hidden");
+  mainPage.classList.remove("hidden");
+}
+
+// login handler
+function doLogin() {
+  const u = loginUserInput.value.trim();
+  const p = loginPassInput.value.trim();
+  if (u === VALID_USER && p === VALID_PASS) {
+    localStorage.setItem("pmposhan_loggedin","yes");
+    loginPage.classList.add("hidden");
+    mainPage.classList.remove("hidden");
+    loginError.classList.add("hidden");
+    loginUserInput.value = "";
+    loginPassInput.value = "";
+  } else {
+    loginError.classList.remove("hidden");
+    loginBox.classList.add("animate-shake");
+    setTimeout(()=>loginBox.classList.remove("animate-shake"),400);
+    loginPassInput.value = "";
+    loginPassInput.focus();
+  }
+}
+loginBtn.addEventListener("click", doLogin);
+[loginUserInput, loginPassInput].forEach(el => el.addEventListener("keydown", e => { if (e.key==="Enter") { e.preventDefault(); doLogin(); } }));
+logoutBtn.addEventListener("click", ()=>{ localStorage.removeItem("pmposhan_loggedin"); location.reload(); });
+
+/* ================= SCHOOLS METADATA (for auto-fill) ================= */
+const SCHOOLS = {
+  "Government Primary School A": { udise: "GPS-A-001", type: "Government", category: "Primary", district: "Kolkata", kitchen: "NGO", enrolment: 320, address: "Sector 5, Block A" },
+  "Government Primary School B": { udise: "GPS-B-002", type: "Government", category: "Primary", district: "Howrah", kitchen: "SHG", enrolment: 280, address: "NH-6 Road" },
+  "Government Primary School C": { udise: "GPS-C-003", type: "Government", category: "Primary", district: "North 24 Pgs", kitchen: "School Managed", enrolment: 210, address: "Village Road" },
+  "Government Upper Primary School": { udise: "GUPS-010", type: "Government", category: "Upper Primary", district: "Kolkata", kitchen: "NGO", enrolment: 450, address: "Azad Lane" },
+  "Model School": { udise: "MS-100", type: "Model", category: "Model", district: "Hooghly", kitchen: "SHG", enrolment: 520, address: "Model Rd" },
+  "Municipal School": { udise: "MUN-50", type: "Local Body", category: "Primary", district: "Kolkata", kitchen: "School Managed", enrolment: 300, address: "Market Street" }
+};
+
+/* ================= APP STATE & DOM refs ================= */
+let data = []; // all entries
+let editIndex = null;
+
+/* DOM refs */
+const entryForm = document.getElementById("entryForm");
+const monthInput = document.getElementById("month");
+const udiseInput = document.getElementById("udise");
+const schoolSelect = document.getElementById("schoolName");
+const studentsInput = document.getElementById("enrolment");
+const schoolType = document.getElementById("schoolType");
+const schoolCategory = document.getElementById("schoolCategory");
+const kitchenType = document.getElementById("kitchenType");
+const locationFull = document.getElementById("locationFull");
+
+const availed_bal = document.getElementById("availed_bal");
+const availed_primary = document.getElementById("availed_primary");
+const availed_upper = document.getElementById("availed_upper");
+const schoolDays = document.getElementById("schoolDays");
+const daysMdmServed = document.getElementById("daysMdmServed");
+const totalMealsServed = document.getElementById("totalMealsServed");
+
+function $id(id){ return document.getElementById(id); }
+
+/* fund fields id list used earlier (no change) */
+
+/* cooks */
+const cooksTbody = document.getElementById("cooksTbody");
+const addCookRowBtn = document.getElementById("addCookRow");
+const clearCookRowsBtn = document.getElementById("clearCookRows");
+
+/* food grains inputs referenced later */
+/* children health */
+const ifa_boys = document.getElementById("ifa_boys");
+const ifa_girls = document.getElementById("ifa_girls");
+const rbsk_screened = document.getElementById("rbsk_screened");
+const rbsk_referred = document.getElementById("rbsk_referred");
+
+/* inspection */
+const insp_yes = document.getElementById("insp_yes");
+const insp_no = document.getElementById("insp_no");
+const insp_taskforce = document.getElementById("insp_taskforce");
+const insp_district = document.getElementById("insp_district");
+const insp_block = document.getElementById("insp_block");
+const insp_smc = document.getElementById("insp_smc");
+const untoward_incidents = document.getElementById("untoward_incidents");
+const sig_smc = document.getElementById("sig_smc");
+const sig_head = document.getElementById("sig_head");
+
+/* table area */
+const tableBody = document.getElementById("tableBody");
+const filterMonth = document.getElementById("filterMonth");
+const filterBtn = document.getElementById("filterBtn");
+const clearFilter = document.getElementById("clearFilter");
+
+/* school details card */
+const sd_name = document.getElementById("sd_name");
+const sd_udise = document.getElementById("sd_udise");
+const sd_type = document.getElementById("sd_type");
+const sd_cat = document.getElementById("sd_cat");
+const sd_dist = document.getElementById("sd_dist");
+const sd_kitchen = document.getElementById("sd_kitchen");
+const sd_enroll = document.getElementById("sd_enroll");
+const viewSchoolBtn = document.getElementById("viewSchoolBtn");
+const clearDetailsBtn = document.getElementById("clearDetailsBtn");
+
+/* modal */
+const detailsModal = document.getElementById("detailsModal");
+const detailsContent = document.getElementById("detailsContent");
+const closeModal = document.getElementById("closeModal");
+
+/* chart */
+const ctx = document.getElementById('trendChart').getContext('2d');
+let trendChart = new Chart(ctx, {
+  type: 'line',
+  data: { labels: [], datasets: [{ label: 'Enrolment (sum)', data: [], borderWidth: 3, borderColor: '#1d75e5' }] },
+  options: { responsive: true, scales: { y: { beginAtZero: true } } }
+});
+
+/* helpers */
+function formatMonth(ym){ if(!ym) return ''; const [y,m]=ym.split('-'); return new Date(y,m-1).toLocaleString(undefined,{month:'short',year:'numeric'}); }
+function toNumber(v){ return Number(v)||0; }
+function escapeHtml(x){ if (!x) return ''; return String(x).replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function saveData(){ localStorage.setItem('pm_poshan_data_full', JSON.stringify(data)); }
+function loadData(){ const s=localStorage.getItem('pm_poshan_data_full'); if(s){ try{ data=JSON.parse(s);}catch(e){data=[];} } else data=[]; }
+
+/* School details card autofill */
+function updateSchoolDetailsCard(schoolName){
+  if(!schoolName || !SCHOOLS[schoolName]){
+    sd_name.textContent='—'; sd_udise.textContent='—'; sd_type.textContent='—'; sd_cat.textContent='—';
+    sd_dist.textContent='—'; sd_kitchen.textContent='—'; sd_enroll.textContent='—';
+    return;
+  }
+  const s = SCHOOLS[schoolName];
+  sd_name.textContent = schoolName;
+  sd_udise.textContent = s.udise || '—';
+  sd_type.textContent = s.type || '—';
+  sd_cat.textContent = s.category || '—';
+  sd_dist.textContent = s.district || '—';
+  sd_kitchen.textContent = s.kitchen || '—';
+  sd_enroll.textContent = (s.enrolment!=null)? s.enrolment.toLocaleString() : '—';
+}
+
+/* wire school select change to update details & defaults */
+schoolSelect.addEventListener('change', ()=> {
+  const val = schoolSelect.value;
+  updateSchoolDetailsCard(val);
+  if (SCHOOLS[val]){
+    udiseInput.value = SCHOOLS[val].udise || '';
+    schoolType.value = SCHOOLS[val].type || '';
+    schoolCategory.value = SCHOOLS[val].category || '';
+    kitchenType.value = SCHOOLS[val].kitchen || '';
+    studentsInput.value = SCHOOLS[val].enrolment || '';
+    locationFull.value = SCHOOLS[val].address || '';
+  }
+});
+
+/* ============== cooks dynamic rows ============== */
+let cooks = [];
+function renderCooksRows(cooksArr){
+  cooksTbody.innerHTML = '';
+  (cooksArr||[]).forEach((c, idx)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="p-2">${idx+1}</td>
+      <td class="p-2"><input data-row="${idx}" data-field="name" class="cook-input p-1 border rounded w-full" value="${escapeHtml(c.name||'')}" /></td>
+      <td class="p-2"><select data-row="${idx}" data-field="gender" class="cook-input p-1 border rounded w-full"><option ${c.gender==='M'?'selected':''}>M</option><option ${c.gender==='F'?'selected':''}>F</option></select></td>
+      <td class="p-2"><select data-row="${idx}" data-field="category" class="cook-input p-1 border rounded w-full"><option ${c.category==='SC'?'selected':''}>SC</option><option ${c.category==='ST'?'selected':''}>ST</option><option ${c.category==='OBC'?'selected':''}>OBC</option><option ${c.category==='GEN'?'selected':''}>GEN</option></select></td>
+      <td class="p-2"><select data-row="${idx}" data-field="mode" class="cook-input p-1 border rounded w-full"><option ${c.mode==='Cash'?'selected':''}>Cash</option><option ${c.mode==='Bank'?'selected':''}>Bank</option></select></td>
+      <td class="p-2 text-right"><input data-row="${idx}" data-field="amount" type="number" min="0" class="cook-input p-1 border rounded w-full text-right" value="${toNumber(c.amount)}" /></td>
+      <td class="p-2"><button data-index="${idx}" class="removeCookBtn px-2 py-1 bg-red-100 rounded">Remove</button></td>
+    `;
+    cooksTbody.appendChild(tr);
+  });
+
+  Array.from(document.querySelectorAll('.removeCookBtn')).forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      const i = Number(btn.getAttribute('data-index'));
+      cooks.splice(i,1); renderCooksRows(cooks);
+    });
+  });
+}
+
+addCookRowBtn.addEventListener('click', ()=>{
+  cooks.push({name:'',gender:'M',category:'GEN',mode:'Cash',amount:0});
+  renderCooksRows(cooks);
+});
+clearCookRowsBtn.addEventListener('click', ()=>{
+  if(!confirm('Clear all cook rows?')) return;
+  cooks = []; renderCooksRows(cooks);
+});
+document.addEventListener('input', (e)=>{
+  if (e.target && e.target.classList.contains('cook-input')){
+    const row = Number(e.target.getAttribute('data-row'));
+    const field = e.target.getAttribute('data-field');
+    if (Number.isFinite(row) && cooks[row]){
+      cooks[row][field] = (field==='amount') ? toNumber(e.target.value) : e.target.value;
+    }
+  }
+});
+
+/* ============== Food grains helpers ============== */
+function collectFoodGrains(){
+  return {
+    bal: {
+      wheat: { open: toNumber($id('fg_bal_wheat_open').value), recv: toNumber($id('fg_bal_wheat_recv').value), cons: toNumber($id('fg_bal_wheat_cons').value), close: toNumber($id('fg_bal_wheat_close').value) },
+      rice:  { open: toNumber($id('fg_bal_rice_open').value),  recv: toNumber($id('fg_bal_rice_recv').value),  cons: toNumber($id('fg_bal_rice_cons').value),  close: toNumber($id('fg_bal_rice_close').value) }
+    },
+    primary: {
+      wheat: { open: toNumber($id('fg_pri_wheat_open').value), recv: toNumber($id('fg_pri_wheat_recv').value), cons: toNumber($id('fg_pri_wheat_cons').value), close: toNumber($id('fg_pri_wheat_close').value) },
+      rice:  { open: toNumber($id('fg_pri_rice_open').value),  recv: toNumber($id('fg_pri_rice_recv').value),  cons: toNumber($id('fg_pri_rice_cons').value),  close: toNumber($id('fg_pri_rice_close').value) }
+    },
+    upper: {
+      wheat: { open: toNumber($id('fg_up_wheat_open').value), recv: toNumber($id('fg_up_wheat_recv').value), cons: toNumber($id('fg_up_wheat_cons').value), close: toNumber($id('fg_up_wheat_close').value) },
+      rice:  { open: toNumber($id('fg_up_rice_open').value),  recv: toNumber($id('fg_up_rice_recv').value),  cons: toNumber($id('fg_up_rice_cons').value),  close: toNumber($id('fg_up_rice_close').value) }
+    }
+  };
+}
+
+function populateFoodGrains(fg){
+  if(!fg) return;
+  $id('fg_bal_wheat_open').value = fg.bal?.wheat?.open || '';
+  $id('fg_bal_wheat_recv').value = fg.bal?.wheat?.recv || '';
+  $id('fg_bal_wheat_cons').value = fg.bal?.wheat?.cons || '';
+  $id('fg_bal_wheat_close').value = fg.bal?.wheat?.close || '';
+
+  $id('fg_bal_rice_open').value = fg.bal?.rice?.open || '';
+  $id('fg_bal_rice_recv').value = fg.bal?.rice?.recv || '';
+  $id('fg_bal_rice_cons').value = fg.bal?.rice?.cons || '';
+  $id('fg_bal_rice_close').value = fg.bal?.rice?.close || '';
+
+  $id('fg_pri_wheat_open').value = fg.primary?.wheat?.open || '';
+  $id('fg_pri_wheat_recv').value = fg.primary?.wheat?.recv || '';
+  $id('fg_pri_wheat_cons').value = fg.primary?.wheat?.cons || '';
+  $id('fg_pri_wheat_close').value = fg.primary?.wheat?.close || '';
+
+  $id('fg_pri_rice_open').value = fg.primary?.rice?.open || '';
+  $id('fg_pri_rice_recv').value = fg.primary?.rice?.recv || '';
+  $id('fg_pri_rice_cons').value = fg.primary?.rice?.cons || '';
+  $id('fg_pri_rice_close').value = fg.primary?.rice?.close || '';
+
+  $id('fg_up_wheat_open').value = fg.upper?.wheat?.open || '';
+  $id('fg_up_wheat_recv').value = fg.upper?.wheat?.recv || '';
+  $id('fg_up_wheat_cons').value = fg.upper?.wheat?.cons || '';
+  $id('fg_up_wheat_close').value = fg.upper?.wheat?.close || '';
+
+  $id('fg_up_rice_open').value = fg.upper?.rice?.open || '';
+  $id('fg_up_rice_recv').value = fg.upper?.rice?.recv || '';
+  $id('fg_up_rice_cons').value = fg.upper?.rice?.cons || '';
+  $id('fg_up_rice_close').value = fg.upper?.rice?.close || '';
+}
+
+/* ============== Funds helpers (existing) ============== */
+function collectFundValues(){
+  return {
+    balvatika: { open: toNumber($id('fund_open_balvatika').value), recv: toNumber($id('fund_recv_balvatika').value), exp: toNumber($id('fund_exp_balvatika').value), close: toNumber($id('fund_close_balvatika').value) },
+    primary: { open: toNumber($id('fund_open_primary').value), recv: toNumber($id('fund_recv_primary').value), exp: toNumber($id('fund_exp_primary').value), close: toNumber($id('fund_close_primary').value) },
+    upper: { open: toNumber($id('fund_open_upper').value), recv: toNumber($id('fund_recv_upper').value), exp: toNumber($id('fund_exp_upper').value), close: toNumber($id('fund_close_upper').value) },
+    cch: { open: toNumber($id('fund_open_cch').value), recv: toNumber($id('fund_recv_cch').value), exp: toNumber($id('fund_exp_cch').value), close: toNumber($id('fund_close_cch').value) },
+    mme: { open: toNumber($id('fund_open_mme').value), recv: toNumber($id('fund_recv_mme').value), exp: toNumber($id('fund_exp_mme').value), close: toNumber($id('fund_close_mme').value) },
+    bankmatch: $id('bankmatch_yes').checked ? 'Yes' : ($id('bankmatch_no').checked ? 'No' : '')
+  };
+}
+
+function populateFundValues(f){
+  if(!f) return;
+  $id('fund_open_balvatika').value = f.balvatika.open || '';
+  $id('fund_recv_balvatika').value = f.balvatika.recv || '';
+  $id('fund_exp_balvatika').value = f.balvatika.exp || '';
+  $id('fund_close_balvatika').value = f.balvatika.close || '';
+
+  $id('fund_open_primary').value = f.primary.open || '';
+  $id('fund_recv_primary').value = f.primary.recv || '';
+  $id('fund_exp_primary').value = f.primary.exp || '';
+  $id('fund_close_primary').value = f.primary.close || '';
+
+  $id('fund_open_upper').value = f.upper.open || '';
+  $id('fund_recv_upper').value = f.upper.recv || '';
+  $id('fund_exp_upper').value = f.upper.exp || '';
+  $id('fund_close_upper').value = f.upper.close || '';
+
+  $id('fund_open_cch').value = f.cch.open || '';
+  $id('fund_recv_cch').value = f.cch.recv || '';
+  $id('fund_exp_cch').value = f.cch.exp || '';
+  $id('fund_close_cch').value = f.cch.close || '';
+
+  $id('fund_open_mme').value = f.mme.open || '';
+  $id('fund_recv_mme').value = f.mme.recv || '';
+  $id('fund_exp_mme').value = f.mme.exp || '';
+  $id('fund_close_mme').value = f.mme.close || '';
+
+  if (f.bankmatch === 'Yes'){ $id('bankmatch_yes').checked=true; $id('bankmatch_no').checked=false; }
+  else if (f.bankmatch === 'No'){ $id('bankmatch_no').checked=true; $id('bankmatch_yes').checked=false; }
+  else { $id('bankmatch_yes').checked=$id('bankmatch_no').checked=false; }
+}
+
+/* ============== Collect entire entry from form ============== */
+function collectEntryFromForm(){
+  // sync cooks inline to cooks array
+  Array.from(document.querySelectorAll('.cook-input')).forEach(inp=>{
+    const r = Number(inp.getAttribute('data-row'));
+    const f = inp.getAttribute('data-field');
+    if (Number.isFinite(r) && cooks[r]) cooks[r][f] = (f==='amount') ? toNumber(inp.value) : inp.value;
+  });
+
+  const entry = {
+    month: monthInput.value,
+    udise: udiseInput.value.trim(),
+    school: schoolSelect.value,
+    type: schoolType.value,
+    category: schoolCategory.value,
+    location: locationFull.value.trim(),
+    enrolment: toNumber(studentsInput.value),
+    kitchen: kitchenType.value,
+
+    meals: {
+      availed: {
+        balvatika: availed_bal.checked,
+        primary: availed_primary.checked,
+        upper: availed_upper.checked
+      },
+      schoolDays: toNumber(schoolDays.value),
+      mdmDaysServed: toNumber(daysMdmServed.value),
+      totalMealsServed: toNumber(totalMealsServed.value)
+    },
+
+    funds: collectFundValues(),
+    cooks: JSON.parse(JSON.stringify(cooks)),
+    foodGrains: collectFoodGrains(),
+
+    health: {
+      ifaBoys: toNumber(ifa_boys.value),
+      ifaGirls: toNumber(ifa_girls.value),
+      rbskScreened: toNumber(rbsk_screened.value),
+      rbskReferred: toNumber(rbsk_referred.value)
+    },
+
+    inspection: {
+      done: insp_yes.checked ? 'Yes' : (insp_no.checked ? 'No' : ''),
+      byTaskForce: insp_taskforce.checked,
+      byDistrict: insp_district.checked,
+      byBlock: insp_block.checked,
+      bySMC: insp_smc.checked,
+      untowardIncidents: toNumber(untoward_incidents.value),
+      sigSMC: sig_smc.value.trim(),
+      sigHead: sig_head.value.trim()
+    },
+
+    createdAt: new Date().toISOString()
+  };
+
+  return entry;
+}
+
+/* populate form from entry (for edit) */
+function populateFormFromEntry(entry){
+  if(!entry) return;
+  monthInput.value = entry.month || '';
+  udiseInput.value = entry.udise || '';
+  schoolSelect.value = entry.school || '';
+  schoolType.value = entry.type || '';
+  schoolCategory.value = entry.category || '';
+  kitchenType.value = entry.kitchen || '';
+  locationFull.value = entry.location || '';
+  studentsInput.value = entry.enrolment || '';
+
+  availed_bal.checked = !!(entry.meals && entry.meals.availed && entry.meals.availed.balvatika);
+  availed_primary.checked = !!(entry.meals && entry.meals.availed && entry.meals.availed.primary);
+  availed_upper.checked = !!(entry.meals && entry.meals.availed && entry.meals.availed.upper);
+  schoolDays.value = entry.meals ? entry.meals.schoolDays || '' : '';
+  daysMdmServed.value = entry.meals ? entry.meals.mdmDaysServed || '' : '';
+  totalMealsServed.value = entry.meals ? entry.meals.totalMealsServed || '' : '';
+
+  populateFundValues(entry.funds);
+  cooks = entry.cooks ? JSON.parse(JSON.stringify(entry.cooks)) : [];
+  renderCooksRows(cooks);
+  populateFoodGrains(entry.foodGrains);
+
+  if (entry.health){
+    ifa_boys.value = entry.health.ifaBoys || '';
+    ifa_girls.value = entry.health.ifaGirls || '';
+    rbsk_screened.value = entry.health.rbskScreened || '';
+    rbsk_referred.value = entry.health.rbskReferred || '';
+  } else {
+    ifa_boys.value = ifa_girls.value = rbsk_screened.value = rbsk_referred.value = '';
+  }
+
+  if (entry.inspection){
+    if (entry.inspection.done === 'Yes'){ insp_yes.checked=true; insp_no.checked=false; }
+    else if (entry.inspection.done === 'No'){ insp_no.checked=true; insp_yes.checked=false; }
+    else { insp_yes.checked=insp_no.checked=false; }
+    insp_taskforce.checked = !!entry.inspection.byTaskForce;
+    insp_district.checked = !!entry.inspection.byDistrict;
+    insp_block.checked = !!entry.inspection.byBlock;
+    insp_smc.checked = !!entry.inspection.bySMC;
+    untoward_incidents.value = entry.inspection.untowardIncidents || '';
+    sig_smc.value = entry.inspection.sigSMC || '';
+    sig_head.value = entry.inspection.sigHead || '';
+  } else {
+    insp_yes.checked = insp_no.checked = insp_taskforce.checked = insp_district.checked = insp_block.checked = insp_smc.checked = false;
+    untoward_incidents.value = ''; sig_smc.value=''; sig_head.value='';
+  }
+
+  updateSchoolDetailsCard(entry.school);
+  editIndex = null; // we set outer variable when clicking Edit
+}
+
+/* clear form */
+function clearForm(){
+  entryForm.reset();
+  cooks = []; renderCooksRows(cooks);
+  populateFundValues({balvatika:{},primary:{},upper:{},cch:{},mme:{},bankmatch:''});
+  populateFoodGrains(null);
+  ifa_boys.value = ifa_girls.value = rbsk_screened.value = rbsk_referred.value = '';
+  insp_yes.checked = insp_no.checked = insp_taskforce.checked = insp_district.checked = insp_block.checked = insp_smc.checked = false;
+  untoward_incidents.value = ''; sig_smc.value=''; sig_head.value='';
+  updateSchoolDetailsCard('');
+  editIndex = null;
+}
+
+/* remove entry */
+function removeEntry(i){
+  if(!confirm('Delete this entry?')) return;
+  data.splice(i,1);
+  saveData(); renderTable();
+}
+
+/* show details modal */
+function showDetailsModal(entry){
+  if(!entry) return;
+  let html = `<div class="space-y-2 text-sm">`;
+  html += `<div class="grid grid-cols-2 gap-2"><div><b>Month:</b> ${formatMonth(entry.month)}</div><div><b>School:</b> ${escapeHtml(entry.school)}</div></div>`;
+  html += `<div><b>UDISE:</b> ${escapeHtml(entry.udise||'')}</div>`;
+  html += `<div><b>Type / Category:</b> ${escapeHtml(entry.type||'')} / ${escapeHtml(entry.category||'')}</div>`;
+  html += `<div><b>Location:</b> ${escapeHtml(entry.location||'')}</div>`;
+  html += `<div><b>Kitchen Type:</b> ${escapeHtml(entry.kitchen||'')}</div>`;
+  html += `<div><b>Enrolment:</b> ${entry.enrolment?.toLocaleString?.() ?? entry.enrolment}</div>`;
+
+  html += `<hr class="my-2"/>`;
+  html += `<h4 class="font-medium">Meals Availed Status</h4>`;
+  html += `<div>Bal Vatika: ${entry.meals?.availed?.balvatika ? 'Yes':'No'}, Primary: ${entry.meals?.availed?.primary ? 'Yes':'No'}, Upper Primary: ${entry.meals?.availed?.upper ? 'Yes':'No'}</div>`;
+  html += `<div>Number of school days: ${entry.meals?.schoolDays || 0}</div>`;
+  html += `<div>MDM days served: ${entry.meals?.mdmDaysServed || 0}</div>`;
+  html += `<div>Total meals in month: ${entry.meals?.totalMealsServed || 0}</div>`;
+
+  html += `<hr class="my-2"/>`;
+  html += `<h4 class="font-medium">Fund Details (Rs.)</h4>`;
+  const f = entry.funds || {};
+  html += `<table class="w-full text-sm"><thead><tr class="bg-slate-100"><th class="p-1 text-left">Component</th><th class="p-1 text-right">Opening</th><th class="p-1 text-right">Received</th><th class="p-1 text-right">Exp</th><th class="p-1 text-right">Closing</th></tr></thead><tbody>`;
+  function rowHtml(name, obj){ return `<tr><td class="p-1">${name}</td><td class="p-1 text-right">${obj.open||0}</td><td class="p-1 text-right">${obj.recv||0}</td><td class="p-1 text-right">${obj.exp||0}</td><td class="p-1 text-right">${obj.close||0}</td></tr>`;}
+  html += rowHtml('Cooking Cost - Bal Vatika', f.balvatika||{});
+  html += rowHtml('Cooking Cost - Primary', f.primary||{});
+  html += rowHtml('Cooking Cost - Upper Primary', f.upper||{});
+  html += rowHtml('Cook Cum Helper', f.cch||{});
+  html += rowHtml('School Expenses : MME Expenses', f.mme||{});
+  html += `</tbody></table>`;
+  html += `<div class="mt-2">Closing matches bank balance: ${f.bankmatch||'—'}</div>`;
+
+  html += `<hr class="my-2"/>`;
+  html += `<h4 class="font-medium">Cook Cum Helper Payment Details</h4>`;
+  if(entry.cooks && entry.cooks.length){
+    html += `<table class="w-full text-sm"><thead><tr class="bg-slate-100"><th class="p-1">S.No</th><th class="p-1">Name</th><th class="p-1">Gender</th><th class="p-1">Category</th><th class="p-1">Mode</th><th class="p-1 text-right">Amount</th></tr></thead><tbody>`;
+    entry.cooks.forEach((c,i)=>{
+      html += `<tr><td class="p-1">${i+1}</td><td class="p-1">${escapeHtml(c.name||'')}</td><td class="p-1">${escapeHtml(c.gender||'')}</td><td class="p-1">${escapeHtml(c.category||'')}</td><td class="p-1">${escapeHtml(c.mode||'')}</td><td class="p-1 text-right">${toNumber(c.amount)}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+  } else { html += `<div>No cook payment records</div>`; }
+
+  html += `<hr class="my-2"/>`;
+  html += `<h4 class="font-medium">5. Food Grains Details (Kg)</h4>`;
+  const fg = entry.foodGrains || {};
+  function fgRow(cat, item, obj){
+    return `<tr><td class="p-1">${cat}</td><td class="p-1">${item}</td><td class="p-1 text-right">${obj.open||0}</td><td class="p-1 text-right">${obj.recv||0}</td><td class="p-1 text-right">${obj.cons||0}</td><td class="p-1 text-right">${obj.close||0}</td></tr>`;
+  }
+  html += `<table class="w-full text-sm"><thead><tr class="bg-slate-100"><th class="p-1">Category</th><th class="p-1">Item</th><th class="p-1 text-right">Opening</th><th class="p-1 text-right">Received</th><th class="p-1 text-right">Consumption</th><th class="p-1 text-right">Closing</th></tr></thead><tbody>`;
+  if (fg.bal){ html += fgRow('Bal Vatika','Wheat',fg.bal.wheat||{}); html += fgRow('Bal Vatika','Rice',fg.bal.rice||{}); }
+  if (fg.primary){ html += fgRow('Primary','Wheat',fg.primary.wheat||{}); html += fgRow('Primary','Rice',fg.primary.rice||{}); }
+  if (fg.upper){ html += fgRow('Upper Primary','Wheat',fg.upper.wheat||{}); html += fgRow('Upper Primary','Rice',fg.upper.rice||{}); }
+  html += `</tbody></table>`;
+
+  html += `<hr class="my-2"/>`;
+  html += `<h4 class="font-medium">6. Children Health Status</h4>`;
+  html += `<div>No. children (1–8) received 4 IFA tablets - Boys: ${entry.health?.ifaBoys || 0}, Girls: ${entry.health?.ifaGirls || 0}</div>`;
+  html += `<div>Children screened by RBSK: ${entry.health?.rbskScreened || 0}</div>`;
+  html += `<div>Children referred by RBSK: ${entry.health?.rbskReferred || 0}</div>`;
+
+  html += `<hr class="my-2"/>`;
+  html += `<h4 class="font-medium">7. School Inspection</h4>`;
+  html += `<div>Inspection done this month: ${entry.inspection?.done || '—'}</div>`;
+  const inspectors = [];
+  if (entry.inspection?.byTaskForce) inspectors.push('Members of Task Force');
+  if (entry.inspection?.byDistrict) inspectors.push('District Officials');
+  if (entry.inspection?.byBlock) inspectors.push('Block/Taluka Officials');
+  if (entry.inspection?.bySMC) inspectors.push('SMC Members');
+  html += `<div>By: ${inspectors.length ? inspectors.join(', ') : '—'}</div>`;
+  html += `<div>Number of untoward incidents: ${entry.inspection?.untowardIncidents || 0}</div>`;
+  html += `<div>Signature (SMC Chairperson / Gram Pradhan): ${escapeHtml(entry.inspection?.sigSMC || '')}</div>`;
+  html += `<div>Signature (Head Teacher): ${escapeHtml(entry.inspection?.sigHead || '')}</div>`;
+
+  html += `</div>`;
+  detailsContent.innerHTML = html;
+  detailsModal.classList.remove('hidden');
+}
+
+/* render table rows */
+function renderTable(){
+  tableBody.innerHTML = '';
+  const filter = filterMonth.value;
+  const filtered = data.filter(r => !filter || r.month === filter);
+  filtered.forEach((row, idx)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="px-4 py-2">${idx+1}</td>
+      <td class="px-4 py-2">${formatMonth(row.month)}</td>
+      <td class="px-4 py-2">${escapeHtml(row.school)}</td>
+      <td class="px-4 py-2 text-right">${row.enrolment?.toLocaleString?.() ?? row.enrolment}</td>
+      <td class="px-4 py-2">
+        <button data-i="${idx}" class="viewBtn px-2 py-1 bg-blue-100 rounded mr-2">View</button>
+        <button data-i="${idx}" class="editBtn px-2 py-1 bg-green-100 rounded mr-2">Edit</button>
+        <button data-i="${idx}" class="delBtn px-2 py-1 bg-red-100 rounded">Delete</button>
+      </td>
+    `;
+    tableBody.appendChild(tr);
+  });
+
+  Array.from(document.querySelectorAll('.viewBtn')).forEach(b=>{
+    b.addEventListener('click', ()=> {
+      const i = Number(b.getAttribute('data-i'));
+      showDetailsModal(data[i]);
+    });
+  });
+  Array.from(document.querySelectorAll('.editBtn')).forEach(b=>{
+    b.addEventListener('click', ()=> {
+      const i = Number(b.getAttribute('data-i'));
+      editIndex = i;
+      populateFormFromEntry(data[i]);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+  Array.from(document.querySelectorAll('.delBtn')).forEach(b=>{
+    b.addEventListener('click', ()=> {
+      const i = Number(b.getAttribute('data-i'));
+      removeEntry(i);
+    });
+  });
+
+  // update summary & chart
+  const totalSchools = new Set(data.map(d=>d.school)).size;
+  try { document.getElementById('totalSchools').textContent = totalSchools; } catch(e){}
+  const totalStudents = data.reduce((s,r)=> s + (r.enrolment||0), 0);
+  try { document.getElementById('totalStudents').textContent = totalStudents.toLocaleString(); } catch(e){}
+  updateChart();
+}
+
+function updateChart(){
+  const monthly = {};
+  data.forEach(r => monthly[r.month] = (monthly[r.month]||0) + (r.enrolment||0));
+  const keys = Object.keys(monthly).sort();
+  trendChart.data.labels = keys.map(formatMonth);
+  trendChart.data.datasets[0].data = keys.map(k => monthly[k]);
+  trendChart.update();
+}
+
+/* Save entry */
+document.getElementById('saveEntryBtn').addEventListener('click', ()=>{
+  if(!monthInput.value){ alert('Please select Month-Year'); monthInput.focus(); return; }
+  if(!schoolSelect.value){ alert('Please select School'); schoolSelect.focus(); return; }
+
+  // sync cooks inline inputs
+  Array.from(document.querySelectorAll('.cook-input')).forEach(inp=>{
+    const r = Number(inp.getAttribute('data-row'));
+    const f = inp.getAttribute('data-field');
+    if (Number.isFinite(r) && cooks[r]) cooks[r][f] = (f==='amount') ? toNumber(inp.value) : inp.value;
+  });
+
+  const entry = collectEntryFromForm();
+  if (editIndex !== null && editIndex >=0 && editIndex < data.length){
+    data[editIndex] = entry;
+  } else {
+    data.push(entry);
+  }
+  saveData();
+  renderTable();
+  clearForm();
+  alert('Entry saved.');
+});
+
+/* Reset form */
+document.getElementById('resetFormBtn').addEventListener('click', ()=>{
+  if(!confirm('Clear the form?')) return;
+  clearForm();
+});
+
+/* filter */
+filterBtn.addEventListener('click', ()=> renderTable());
+clearFilter.addEventListener('click', ()=> { filterMonth.value=''; renderTable(); });
+
+/* modal close */
+closeModal.addEventListener('click', ()=> detailsModal.classList.add('hidden'));
+detailsModal.addEventListener('click', (e)=> { if (e.target === detailsModal) detailsModal.classList.add('hidden'); });
+
+/* quick actions */
+viewSchoolBtn.addEventListener('click', ()=>{
+  if(!schoolSelect.value) return alert('Select school first');
+  updateSchoolDetailsCard(schoolSelect.value);
+  document.getElementById('schoolDetailsCard').scrollIntoView({behavior:'smooth'});
+});
+clearDetailsBtn.addEventListener('click', ()=>{ schoolSelect.value=''; updateSchoolDetailsCard(''); });
+
+/* load saved data & seed if none */
+loadData();
+renderTable();
+updateSchoolDetailsCard(schoolSelect.value);
+if(!data.length){
+  data.push({
+    month: getISOYMOffset(0), udise: 'GPS-A-001', school: 'Government Primary School A', type:'Government', category:'Primary',
+    location:'Kolkata - Block A', enrolment:120, kitchen:'NGO',
+    meals:{availed:{balvatika:true,primary:true,upper:false},schoolDays:26,mdmDaysServed:25,totalMealsServed:3000},
+    funds: { balvatika:{open:10000,recv:5000,exp:8000,close:7000}, primary:{open:20000,recv:10000,exp:15000,close:15000}, upper:{open:0,recv:0,exp:0,close:0}, cch:{open:5000,recv:2000,exp:4000,close:3000}, mme:{open:2000,recv:0,exp:500,close:1500}, bankmatch:'Yes' },
+    cooks: [{name:'Suresh',gender:'M',category:'GEN',mode:'Cash',amount:2000}],
+    foodGrains: { bal: { wheat:{open:100,recv:50,cons:80,close:70}, rice:{open:0,recv:0,cons:0,close:0} }, primary:{ wheat:{open:200,recv:0,cons:40,close:160}, rice:{open:100,recv:50,cons:30,close:120} }, upper:{ wheat:{open:0,recv:0,cons:0,close:0}, rice:{open:0,recv:0,cons:0,close:0} } },
+    health: { ifaBoys: 20, ifaGirls: 22, rbskScreened: 30, rbskReferred:2 },
+    inspection: { done:'Yes', byTaskForce:true, byDistrict:false, byBlock:true, bySMC:false, untowardIncidents:0, sigSMC:'Rajita Devi', sigHead:'Mr. K.R. Das' },
+    createdAt: new Date().toISOString()
+  });
+  saveData(); renderTable();
+}
+
+/* helper to get YYYY-MM for offset months */
+function getISOYMOffset(offsetMonths){
+  const d = new Date(); d.setMonth(d.getMonth()+offsetMonths);
+  const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); return `${y}-${m}`;
+}
+</script>
+
+</body>
+</html>
